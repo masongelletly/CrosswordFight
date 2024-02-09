@@ -1,4 +1,4 @@
-// WE ARE GOING TO QUERY THE DB
+// Mongoose Schema for a puzzleword
 // puzzleword.js
 
 const mongoose = require('mongoose');
@@ -11,6 +11,8 @@ const puzzleWordSchema = new mongoose.Schema({
   difficulty: String
 }, { collection: 'puzzle_words' });
 
+// puzzleword model
 const PuzzleWord = mongoose.model('PuzzleWord', puzzleWordSchema);
 
+// export 
 module.exports = PuzzleWord;
