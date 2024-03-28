@@ -1,7 +1,11 @@
-// Import the necessary hooks from React
+/* react tools */
 import React, { useState, useEffect } from 'react';
+
+/* components */
 import CrosswordGrid from './components/CrosswordGrid';
 import CompletionBanner from './components/CompletionBanner';
+
+/* css */
 import './App.css';
 
 /* our lovely home */
@@ -12,11 +16,14 @@ function App() {
   const [userGrid, setUserGrid] = useState(null); /* for the clients crossword */
   const [isPuzzleComplete, setIsPuzzleComplete] = useState(false); /* is puzzle complete flag */
 
+  /* focus and directional vars */
+  const [currentFocus, setCurrentFocus] = useState({ rowIndex: 1, cellIndex: 1 }); /* begin at 1, 1 (for now) */
+  const [direction, setDirection] = useState('across'); /* initially set to across */
+
 
   /* fetch a crossword from our db */
   async function fetchCrossword() {
     try {
-
       /* hit the crossword endpoint */
       const response = await fetch('http://localhost:5001/complete-crosswords');
       if (!response.ok) {
@@ -37,41 +44,70 @@ function App() {
     }
   }
 
-  /* do this when we mount */
+  /* do this when we mount (fetch crossword) */
   useEffect(() => {
     fetchCrossword();
   }, []); /* [] : on initial render */
 
-  /* Function to check if the puzzle is complete */
+  /* helper to move focus to next available cell */
+  const moveToNextCell = (rowIndex, cellIndex) => {
+    /* across logic */
+    if (direction === 'across') {
+      /* next expected index */
+      const nextCellIndex = cellIndex + 1;
+      /* must be within bounds and non black */
+      if (nextCellIndex < crossword.width && userGrid[rowIndex][nextCellIndex] !== '*') {
+        setCurrentFocus({ rowIndex, cellIndex: nextCellIndex });
+      }
+    }
+    /* down logic */
+    else if (direction === 'down') {
+      const nextRowIndex = rowIndex + 1;
+      /* must be within bounds and non black */
+      if (nextRowIndex < crossword.height && userGrid[nextRowIndex][cellIndex] !== '*') {
+        setCurrentFocus({ rowIndex: nextRowIndex, cellIndex });
+      }
+    }
+  };
+
+  /* helper to check if the puzzle is complete */
   const checkPuzzleComplete = () => {
+    /* iterate over our puzzle */
     for (let i = 0; i < crossword.grid.length; i++) {
       for (let j = 0; j < crossword.grid[i].length; j++) {
-        // Ignore black spaces
+        /* ignore black spaces */
         if (crossword.grid[i][j] === '*') continue;
-        // If any cell does not match the solution, return false
+        /* return false if no match */
         if (userGrid[i][j] !== crossword.grid[i][j]) return false;
       }
     }
-    // If all cells match, return true
+    
+    /* if we have not returned false, must be true! */
     return true;
   };
 
-  /* update the userGrid when a user changes a cell value and check if the puzzle is complete */
+  /* actions that occur when the grid is updated */
   const onGridUpdate = (rowIndex, cellIndex, newValue) => {
+    
+    /* set the userGrid in accordance with the change */
     setUserGrid(currentGrid => {
       const newGrid = [...currentGrid];
       newGrid[rowIndex][cellIndex] = newValue;
-      
-      // Call the checkPuzzleComplete function
+
+      /* a cell has been updated. see if the puzzle is complete */
       const isComplete = checkPuzzleComplete();
       if (isComplete) {
-        // Puzzle is complete. Do something here, like showing a message.
-        console.log('Puzzle completed!');
-        setIsPuzzleComplete(true); // Update state to show the banner
+        setIsPuzzleComplete(true); /* state that controls congratulations banner */
       }
       
+      /* return updated grid */
       return newGrid;
     });
+
+    /* if it is not blank, shift focus forward */
+    if (newValue) {
+      moveToNextCell(rowIndex, cellIndex);
+    }
   };
 
   /* what the client sees. display userGrid */
@@ -83,11 +119,13 @@ function App() {
       </header>
       {userGrid ? (
         <CrosswordGrid
-          height={crossword.height}
-          width={crossword.width}
-          gridData={userGrid}
-          onGridUpdate={onGridUpdate}
-        />
+        height={crossword.height}
+        width={crossword.width}
+        gridData={userGrid}
+        onGridUpdate={onGridUpdate}
+        currentFocus={currentFocus}
+        moveToNextCell={moveToNextCell}
+      />
       ) : (
         <p>Loading crossword...</p>
       )}

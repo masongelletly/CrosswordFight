@@ -1,27 +1,48 @@
-// src/components/CrosswordCell.js
+/* react tools */
+import React, { useEffect, useRef } from 'react'; 
 
-import React from 'react';
+/* css */
 import './CrosswordCell.css';
 
-function CrosswordCell({ value, onChange }) {
+/* represents a cell in a crossword grid */
+function CrosswordCell({ value, onChange, isFocused, moveToNextCell }) {
 
-  // Check if the value is an asterisk to determine if it is a 'black space'
+  /* bool to represent if we consider this cell a black space */
   const isBlackSpace = value === '*';
 
-  // Conditionally set the CSS class and the readOnly property
+  /* conditionally set CSS */
   const cellClassName = isBlackSpace ? "crossword-cell black-space" : "crossword-cell";
   const readOnly = isBlackSpace;
+  const inputRef = useRef(null);
 
+  /* runs after the component renders */
+  useEffect(() => {
+    if (isFocused) {
+      inputRef.current.focus();
+    }
+  }, [isFocused]);
+
+  /* actions when an input is changed in the cell */
+  const handleInputChange = (e) => {
+    onChange(e);
+    if (e.target.value.trim().length === 1) { // Move to the next cell only if one character is entered
+      moveToNextCell();
+    }
+  };
+
+  /* visuals of the cell */
   return (
     <input
-      type="text"
-      maxLength="1"
-      value={isBlackSpace ? '' : value} // If it is a black space, display nothing
-      onChange={onChange}
-      className={cellClassName}
-      readOnly={readOnly} // Make the cell non-editable if it is a black space
+    ref={inputRef}
+    type="text"
+    maxLength="1"
+    value={isBlackSpace ? '' : value}
+    onChange={handleInputChange}
+    className={cellClassName}
+    readOnly={readOnly}
     />
   );
 }
 
+/* export */
 export default CrosswordCell;
