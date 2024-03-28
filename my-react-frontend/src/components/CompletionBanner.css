@@ -1,0 +1,23 @@
+.completion-banner {
+    position: fixed; /* Fixed at the top of the screen */
+    top: 0;
+    left: 0;
+    width: 100%; /* Full width */
+    background-color: hsl(180, 40%, 33%); /* Green background */
+    color: white; /* White text */
+    text-align: center; /* Center the text */
+    padding: 20px 0; /* Some padding */
+    z-index: 1000; /* Make sure it's on top of other elements */
+    animation: slideDown 0.5s ease-out; /* Slide down animation */
+  }
+  
+  /* Keyframes for slide-down animation */
+  @keyframes slideDown {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  

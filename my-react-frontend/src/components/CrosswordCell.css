@@ -1,0 +1,16 @@
+.crossword-cell {
+    width: 40px; /* Adjust based on your preference */
+    height: 40px; /* Adjust based on your preference */
+    border: 1px solid #333; /* Solid border */
+    text-align: center;
+    font-size: 20px;
+    text-transform: uppercase;
+    margin: 0; /* No margin for the cells */
+    box-sizing: border-box; /* Include the border in the element's total width and height */
+  }
+  
+/* Style for the black space cells */
+.black-space {
+    background-color: hsl(180, 40%, 33%);
+    pointer-events: none; /* Prevents the cell from being selectable */
+  }

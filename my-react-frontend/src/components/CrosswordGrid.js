@@ -2,6 +2,7 @@
 
 import React from 'react';
 import CrosswordCell from './CrosswordCell'; // Adjust the import path based on your file structure
+import './CrosswordGrid.css';
 
 function CrosswordGrid({ height, width, gridData, onGridUpdate }) {
   // Function to handle cell changes
@@ -11,8 +12,8 @@ function CrosswordGrid({ height, width, gridData, onGridUpdate }) {
   };
 
   return (
-    <div style={{ display: 'grid', gridTemplateRows: `repeat(${height}, 1fr)`, gridTemplateColumns: `repeat(${width}, 1fr)` }}>
-      {gridData ? gridData.map((row, rowIndex) =>
+    <div className="crossword-grid" style={{ gridTemplateRows: `repeat(${height}, 40px)`, gridTemplateColumns: `repeat(${width}, 40px)` }}>
+      {gridData.map((row, rowIndex) =>
         row.map((cellValue, cellIndex) => (
           <CrosswordCell
             key={`${rowIndex}-${cellIndex}`}
@@ -20,9 +21,10 @@ function CrosswordGrid({ height, width, gridData, onGridUpdate }) {
             onChange={(e) => onCellChange(rowIndex, cellIndex, e.target.value)}
           />
         ))
-      ) : null}
+      )}
     </div>
   );
+  
 }
 
 export default CrosswordGrid;
